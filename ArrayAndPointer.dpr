@@ -61,7 +61,7 @@ begin
     p := @d[0];
     FillMemory(p, 10, 3);
     p := @d;
-    FillMemory(p, 10, 4); //错误
+    FillMemory(p, 10, 4); //错误,p是一个指向d的指针
 
     Readln;
   except
