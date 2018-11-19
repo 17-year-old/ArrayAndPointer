@@ -34,18 +34,20 @@ begin
     SetLength(d, 10);
     FillChar(d[0], 10, 'a');
     //FillChar(d, 9, 'b');  //这样填充的是d开始的连续内存,错误
+    FillChar(PByte(d)^, 10, 'c');//d[0]和d指向的地址是一致的
     p := @d[0];
-    FillChar(p^, 10, 'c'); //等同于d[0]
-    //FillChar(p, 10, 'd'); //这样填充的是p开始的连续内存,错误
-    p := @d;
-    //FillChar(p^, 10, 'e'); //这样填充的是d开始的连续内存,错误
+    FillChar(p^, 10, 'd'); //等同于d[0]
+    //FillChar(p, 10, 'e'); //这样填充的是p开始的连续内存,错误
+    //p := @d;
+    //FillChar(p^, 10, 'f'); //这样填充的是d开始的连续内存,错误
 
     //另外对于MoveMemory, CopyMemory, FillMemory, ZeroMemory等函数
     //内部实现调用了Move, 但是其参数不再是连续内存的首地址了
     //而是指向连续内存的指针
-    //所以其参数不能使用s,s[0],或者a,a[0]
+    //所以其参数不能使用s,s[0],或者d[0]
     //静态数组使用@s和@s[0],这两种写法是一致的
-    //动态数组使用@d[0],不能使用@d
+    //动态数组可以使用d作为参数,也可以使用@d[0],因为 d = @d[0]
+    //但不能使用@d
     //对于动态数组d复制或填充数据时,使用@d多半是错误的
     //还要注意FillChar传的参数时p^
     //FillMemory传的参数是p
@@ -56,12 +58,15 @@ begin
     p := @s[0];
     FillMemory(p, 10, 4);
 
-    //FillMemory(@d, 10, 1);//错误,@d是一个指向d的指针
-    FillMemory(@d[0], 10, 2);
+    FillMemory(d, 10, 2);
+    FillMemory(@d[0], 10, 3);
     p := @d[0];
-    FillMemory(p, 10, 3);
-    p := @d;
-    FillMemory(p, 10, 4); //错误,p是一个指向d的指针
+    FillMemory(p, 10, 4);
+    p := d;
+    FillMemory(p, 10, 5);
+    //FillMemory(@d, 10, 1);//错误,@d是一个指向d的指针
+    //p := @d;
+    //FillMemory(p, 10, 6); //错误,p是一个指向d的指针
 
     Readln;
   except
